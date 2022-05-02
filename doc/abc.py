@@ -39,6 +39,8 @@ class Section(AbstractContextManager):
         kwargs["title"] = kwargs.get("title", list_name) + " list"
 
         with self.table(cols=2, **kwargs) as table:
+            with table.row(**kwargs) as description_row:
+                description_row.cell("description : " +str(registry.decls.lists[list_name].desc), **kwargs)
             for key, value in registry.lists[list_name][0].items():
                 with table.row(**kwargs) as row:
                     row.cell(key, **kwargs)
@@ -55,40 +57,16 @@ class Section(AbstractContextManager):
 
         # Set the default title based on the capture name:
         kwargs["title"] = kwargs.get("title", capture_name) + " capture"
-
+ 
         with self.table(cols=2, **kwargs) as table:
+            with table.row(**kwargs) as description_row:
+                description_row.cell("description: " + str(registry.decls.captures[capture_name].desc), **kwargs)
+
             with table.row(**kwargs) as row:
-                row.cell(capture_name, **kwargs)
-                capture_pattern = str(registry.captures[capture_name][0])
-                print("**************************************")
-                print(capture_pattern)
-                
-                if re.search(r'<(?!user|self)([^>^\s]+)>', capture_pattern):
-                    capture_pattern = re.sub(r'<(?!user|self)([^>^\s]+)>', r' &lt;\1&gt;  ', capture_pattern)
-                    
-                if re.search(r'<user.([^>^\s]+)>', capture_pattern):
-                    print(capture_pattern)
-                    capture_pattern = re.sub(r'<user.([^>]+)>', r' <a href="#user-\1_capture"> &lt;user.\1&gt; </a> ', capture_pattern)
-                    print(capture_pattern)
-                    
-                if re.search(r'<self.([^>^\s]+)>', capture_pattern):
-                    print(capture_pattern)
-                    capture_pattern = re.sub(r'<self.([^>]+)>', r' <a href="#user-\1_capture"> &lt;self.\1&gt; </a> ', capture_pattern)
-                    print(capture_pattern)
-                
-                if re.search(r'{user.([^}^\s]+)}', capture_pattern):
-                    print(capture_pattern)
-                    capture_pattern = re.sub(r'{user.([^}^\s]+)}', r'<a href="#user-\1_list">  {user.\1}  </a>', capture_pattern)
-                    print(capture_pattern)
-                
-                if re.search(r'{self.([^}^\s]+)}', capture_pattern):
-                    print(capture_pattern)
-                    capture_pattern = re.sub(r'{self.([^}^\s]+)}', r'<a href="#user-\1_list">  {self.\1}  </a>', capture_pattern)
-                    print(capture_pattern)
-                
-                final_string = capture_pattern.replace("_", "-") ## this replacement makes the links work but also replaces the underscores in the display name, making them incorrect.
-                final_string_1 = final_string.replace("|", " | ")
-                row.cell(final_string_1, **kwargs)
+
+                capture_pattern = str(registry.captures[capture_name][0].rule.rule)
+
+                row.cell(capture_pattern, **kwargs)                
 
     def formatters(self, **kwargs) -> None:
         """
