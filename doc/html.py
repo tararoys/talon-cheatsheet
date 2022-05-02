@@ -8,12 +8,42 @@ import re
 
 
 def html_escape(text: str) -> str:
-    return (
-        re.sub(r"<user.([-\w]+)>", r"&ltuser.\1&gt", text.replace(r"<phrase>", r"&ltphrase&gt")
-        .replace(r"<number>", r"&ltnumber&gt")
-        .replace(r"<number_small>", r"&ltnumber_small&gt")
-        .replace("\n", "\n<br />\n"))
-    )
+    final_string = text.replace("_", "-") ## this replacement makes the links work but also replaces the underscores in the display name, making them incorrect.
+    final_string_1 = final_string.replace("|", " | ")
+
+    final_string_2 = re.sub(r"<user.([-\w]+)>", r"&ltuser.\1&gt", final_string_1.replace(r"<phrase>", r"&ltphrase&gt")
+    .replace(r"<number>", r"&ltnumber&gt")
+    .replace(r"<number_small>", r"&ltnumber_small&gt")
+    .replace("\n", "\n<br />\n")
+    .replace(r"<", "&lt")
+    .replace(r">", "&gt"))
+
+    capture_pattern = final_string_2 
+    
+    if re.search(r'&ltuser.([^&^\s]+)&gt', capture_pattern):
+        print(capture_pattern)
+        capture_pattern = re.sub(r'&ltuser.([^&^\s]+)&gt', r'<a href="#user-\1-capture">  &ltuser.\1&gt  </a>', capture_pattern)
+        print(capture_pattern)
+
+    if re.search(r'&ltself.([^&^\s]+)&gt', capture_pattern):
+        print(capture_pattern)
+        capture_pattern = re.sub(r'&ltself.([^&^\s]+)&gt', r'<a href="#user-\1-capture">  &ltself.\1&gt  </a>', capture_pattern)
+    
+    if re.search(r'{user.([^}^\s]+)}', capture_pattern):
+        print(capture_pattern)
+        capture_pattern = re.sub(r'{user.([^}^\s]+)}', r'<a href="#user-\1-list">  {user.\1}  </a>', capture_pattern)
+        print(capture_pattern)
+    
+    if re.search(r'{self.([^}^\s]+)}', capture_pattern):
+        print(capture_pattern)
+        capture_pattern = re.sub(r'{self.([^}^\s]+)}', r'<a href="#user-\1-list">  {self.\1}  </a>', capture_pattern)
+        print(capture_pattern)
+
+    final_string = capture_pattern.replace("_", "-") ## this replacement makes the links work but also replaces the underscores in the display name, making them incorrect.
+    
+    
+    return final_string
+
 
 
 def attr_class(kwargs) -> str:
