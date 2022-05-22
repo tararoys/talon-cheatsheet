@@ -96,8 +96,8 @@ class Describe(TalonScriptWalker):
                 "repeat": lambda args: Line(f"Repeat {args[0]} times"),
                 "edit.selected_text": lambda _: Chunk("the selected text"),
                 "user.paste": lambda args: Line(f'Paste {flatten(args)}'),
-                "user.vscode": lambda _: Ignore(),
-                "user.idea": lambda _: Ignore(),
+                "user.vscode": lambda args: Line(f'Do VScode action {flatten(args)}'),
+                "user.idea": lambda args: Line(f'Do Jetbrains {flatten(args)}'),
                 "user.formatted_text": lambda args: Chunk(
                     f"{args[0]} (formatted with {args[1]})"
                 ),
