@@ -26,17 +26,23 @@ main
   @extend .container
   @extend .is-fullhd
 
+
 section
   padding: 20px
+  box-decoration-break: clone
+  -webkit-box-decoration-break: clone
 
 section.columns-2
   column-count: 2
+  page-break-inside: auto
 
 section.columns-3
   column-count: 3
+  page-break-inside: auto
 
 section.columns-4
   column-count: 4
+  page-break-inside: auto
 
 table
   width: 100%
@@ -47,9 +53,18 @@ table
   @extend .is-striped
   @extend .is-hoverable
   margin-bottom: 20px
+  box-decoration-break: clone
+  -webkit-box-decoration-break: clone
+  page-break-inside: auto
+  display: block
+
+  tbody: 
+    display: block
 
   thead tr th
     text-align: center !important
+    display: block
+
 
 th, td
   text-align: left
