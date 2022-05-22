@@ -4,7 +4,7 @@
     "build-sass": "parcel build style.sass && cp dist/style.css style.css"
   },
   "devDependencies": {
-    "parcel": "^2.0.1",
-    "@parcel/transformer-sass": "^2.0.1"
+    "@parcel/transformer-sass": "^2.0.1",
+    "parcel": "^2.5.0"
   }
 }
