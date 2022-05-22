@@ -10,7 +10,64 @@ import sys
 mod = Module()
 
 @mod.action_class
+
+
 class CheatSheetActions:
+    def print_small_sheet():
+        """print a short version"""
+        
+        this_dir = os.path.dirname(os.path.realpath(__file__))
+        
+        doc = HtmlDoc(
+            file_path=os.path.join(this_dir, "small_cheatsheet.html"),
+                title="Small Talon Cheatsheet",
+                css_include_path=os.path.join(this_dir, "style.css"),
+            )
+
+        with doc:
+
+            with doc.section(cols=1, css_classes="has-background-link") as sec: 
+                sec.context(registry.contexts["user.knausj_talon.modes.wake_up.talon"], context_name="user.knausj_talon.modes.wake_up.talon")
+                sec.context(registry.contexts["user.knausj_talon.modes.modes.talon"], context_name="user.knausj_talon.modes.modes.talon")
+            
+            with doc.section(cols=1, css_classes="talon-contexts has-background-primary") as sec:
+                sec.context(registry.contexts["user.knausj_talon.misc.keys.talon"], context_name="user.knausj_talon.misc.keys.talon")
+           
+
+            with doc.section(cols=3, css_classes="has-background-primary talon-lists") as sec:
+                
+                sec.list("user.letter")
+                sec.list("user.symbol_key")
+                sec.list("user.number_key")
+                sec.list("user.modifier_key")
+                sec.list("user.arrow_key")
+                sec.list("user.special_key")
+                sec.capture("user.function_key")
+            
+            with doc.section(cols=1, css_classes="talon-contexts has-background-warning") as sec:
+                sec.context(registry.contexts["user.knausj_talon.modes.dictation_mode.talon"], context_name = "user.knausj_talon.modes.dictation_mode.talon")
+                
+            with doc.section(cols=3, css_classes= "talon-lists has-background-warning") as sec:
+                sec.capture("user.raw_prose")
+                sec.list("user.punctuation")
+                sec.list("user.prose_snippets")
+                sec.capture("user.prose_simple_number")
+                sec.capture("user.prose_number_with_dot")
+                sec.capture("user.prose_number_with_colon")
+                sec.capture("user.formatter_immune")
+                sec.list("user.formatters")
+
+            with doc.section(cols=1, css_classes="has-background-danger") as sec:
+                sec.context(registry.contexts["user.knausj_talon.mouse_grid.mouse_grid_always.talon"], context_name = "user.knausj_talon.mouse_grid.mouse_grid_always.talon")
+                sec.context(registry.contexts["user.knausj_talon.mouse_grid.mouse_grid_open.talon"], context_name = "user.knausj_talon.mouse_grid.mouse_grid_open.talon")  
+                sec.context(registry.contexts["user.knausj_talon.misc.mouse.talon"], context_name = "user.knausj_talon.modes.misc.mouse.talon")
+
+            with doc.section(cols=1, css_classes="has-background-success") as sec:
+                sec.context(registry.contexts["user.knausj_talon.misc.window_management.talon"], context_name = "user.knausj_talon.misc.window_management.talon")
+            
+            with doc.section(cols=2, css_classes="has-background-success") as sec:
+                sec.list("user.window_snap_positions")
+
     def print_cheatsheet(format: str):
         """
         Print out a help document of all Talon commands as <format>
@@ -23,7 +80,7 @@ class CheatSheetActions:
         if format.lower() == "html":
             doc = HtmlDoc(
                 file_path=os.path.join(this_dir, "cheatsheet.html"),
-                title="Talon Cheatsheet",
+                title="Giant Talon Command Reference",
                 css_include_path=os.path.join(this_dir, "style.css"),
             )
 
