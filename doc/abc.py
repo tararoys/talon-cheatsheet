@@ -5,6 +5,8 @@ from talon.scripting.context import Context  # type: ignore
 from typing import *
 from user.cheatsheet.doc.talon_script.describe import Describe
 import re
+from itertools import islice
+import math
 
 # Abstract classes for printing cheatsheet document
 
@@ -23,12 +25,14 @@ class Table(AbstractContextManager):
 
 
 class Section(AbstractContextManager):
+
+
     def table(self, title: str, **kwargs) -> Table:
         """Creates a table with <cols> columns."""
 
     def list(self, list_name: str, **kwargs) -> None:
         """
-        Create a table for a Talon list.
+        Create a table for a Talon list. If the table is longer than ten items, split the table into parts. 
 
         Args:
             list_name: The name of the list.
@@ -36,15 +40,39 @@ class Section(AbstractContextManager):
         """
 
         # Set the default title based on the list name:
-        kwargs["title"] = kwargs.get("title", list_name) + " list"
 
-        with self.table(cols=2, **kwargs) as table:
-            with table.row(**kwargs) as description_row:
-                description_row.cell("description : " +str(registry.decls.lists[list_name].desc), **kwargs)
-            for key, value in registry.lists[list_name][0].items():
-                with table.row(**kwargs) as row:
-                    row.cell(key, **kwargs)
-                    row.cell(value, **kwargs)
+        
+        original_table = registry.lists[list_name][0]
+        def chunks(data, SIZE=10000):
+            it = iter(data)
+            for i in range(0, len(data), SIZE):
+                yield {k:data[k] for k in islice(it, SIZE)}
+
+        size = 10 
+        chunked = chunks(registry.lists[list_name][0], size)
+        number_of_chunks = math.ceil(len(original_table)/size)
+        chunk_index = 1
+        title = kwargs.get("title", list_name) + " list "
+        if len(original_table) > 10: 
+            for item in chunked:
+                kwargs["title"] = title + str(chunk_index) + " of " + str(number_of_chunks)
+                chunk_index = chunk_index + 1
+                with self.table(cols=2, **kwargs) as table:
+                    with table.row(**kwargs) as description_row:
+                        description_row.cell("description : " +str(registry.decls.lists[list_name].desc), **kwargs)
+                    for key, value in item.items():
+                       with table.row(**kwargs) as row:
+                            row.cell(key, **kwargs)
+                            row.cell(value, **kwargs)
+        else:
+            kwargs["title"] = kwargs.get("title", list_name) + " list"
+            with self.table(cols=2, **kwargs) as table:
+                with table.row(**kwargs) as description_row:
+                    description_row.cell("description : " +str(registry.decls.lists[list_name].desc), **kwargs)
+                for key, value in registry.lists[list_name][0].items():
+                 with table.row(**kwargs) as row:
+                        row.cell(key, **kwargs)
+                        row.cell(value, **kwargs)
     
     def capture(self, capture_name: str, **kwargs) -> None:
         """
