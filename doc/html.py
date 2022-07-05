@@ -141,6 +141,9 @@ class HtmlSection(Section):
 
     def table(self, **kwargs) -> HtmlTable:
         return HtmlTable(self.file, **kwargs)
+    
+    def paragraph(self,  **kwargs) -> HtmlParagraph:
+        self.file.write(f"<div class='box'><p>{kwargs['content']}</p></div>\n" )
 
 
 class HtmlDoc(Doc):

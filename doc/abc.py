@@ -26,6 +26,8 @@ class Table(AbstractContextManager):
 
 class Section(AbstractContextManager):
 
+    def paragraph(self, **kwargs):
+        """Creates a paragraph"""
 
     def table(self, title: str, **kwargs) -> Table:
         """Creates a table with <cols> columns."""
