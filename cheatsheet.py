@@ -26,7 +26,12 @@ class CheatSheetActions:
 
         with doc:
 
-            with doc.section(cols=1, css_classes="has-background-link") as sec: 
+            with doc.section(cols=1, css_classes="has-background-info", title="Getting Started With Talon Commands") as sec:
+                sec.paragraph(content="This sheet is a collection of voice commands to make it easier to get started using Talon to control your computer.  These commands are all from the recommended command set knausj-talon, which, if you followed the instructions from https://talonvoice.com/docs/#getting-started, you will have installed.  This sheet is designed to help you learn some of the most basic commands first.")
+                sec.paragraph(content="Voice commands are on the left-hand side. Explanations for what they do are on the right.")
+                sec.context(registry.contexts["user.cheatsheet.reading-talon-files.talon"], context_name="user.cheatsheet.reading-talon-files.talon")
+            with doc.section(cols=1, css_classes="has-background-link", title="On/Off Commands") as sec: 
+                #print("1. Print wake up section")
                 sec.context(registry.contexts["user.knausj_talon.modes.wake_up.talon"], context_name="user.knausj_talon.modes.wake_up.talon")
                 sec.context(registry.contexts["user.knausj_talon.modes.modes.talon"], context_name="user.knausj_talon.modes.modes.talon")
             
