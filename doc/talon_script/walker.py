@@ -6,20 +6,31 @@ from talon.scripting.talon_script import * # type: ignore
 from talon.scripting.types import * # type: ignore
 import re
 
-
 class TalonScriptWalker(ABC, Generic[T]):
 
     def fold_command(self, command: CommandImpl) -> T:
+        #print("2. The verbal command @@@@@@" + str(command))
+        #print("3. The talonscript code: command.target:", str(command.target))
         return self.fold_script(command.target)
 
     def fold_script(self, talon_script: TalonScript) -> tuple[T]:
-        return tuple(self.fold_expr(stmt) for stmt in talon_script.lines)
+        #print("4. Getting Things inside the code ", str(talon_script))
+        #print(" 5. What a dalonscript object looks like", dir(talon_script))
+        #print("6. What if I try printing the code attribute:", talon_script.code)
+        #print("7.", talon_script.code)
+        #print("8.", tuple(line.strip() for line in talon_script.code.split('/n')))
+        #print("9.", type(talon_script.lines), ' '.join(str(type(e).__name__) for e in talon_script.lines))
+        result = tuple(self.fold_expr(stmt) for stmt in talon_script.lines) ##I can't pry inside this at all.  
+        #print("11.", str(result))
+        return result
 
     def fold_expr(self, expr: Expr) -> T:
         """"""
-
         # Comments
+        #print("10. in fold_expr", type(expr).__name__)
+
         if isinstance(expr, Comment):
+            #print(expr.text)
             return self.comment(expr.text)
 
         # Operators
@@ -70,6 +81,7 @@ class TalonScriptWalker(ABC, Generic[T]):
 
     def comment(self, text: str) -> T:
         """"""
+        return ""
 
     def operator_add(self, v1: Expr, op: str, v2: Expr) -> T:
         """"""

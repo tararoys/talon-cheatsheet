@@ -43,7 +43,6 @@ class Section(AbstractContextManager):
 
         # Set the default title based on the list name:
 
-        
         original_table = registry.lists[list_name][0]
         def chunks(data, SIZE=10000):
             it = iter(data)
@@ -54,14 +53,18 @@ class Section(AbstractContextManager):
         chunked = chunks(registry.lists[list_name][0], size)
         number_of_chunks = math.ceil(len(original_table)/size)
         chunk_index = 1
-        title = kwargs.get("title", list_name) + " list "
+        title = kwargs.get("title", list_name) + " list"
         if len(original_table) > 10: 
+            kwargs["title"] = title
+            with self.table(cols=2, **kwargs) as table:
+                ##hidden table for id
+                a = 0
             for item in chunked:
-                kwargs["title"] = title + str(chunk_index) + " of " + str(number_of_chunks)
+                kwargs["title"] = title + " " + str(chunk_index) + " of " + str(number_of_chunks)
                 chunk_index = chunk_index + 1
                 with self.table(cols=2, **kwargs) as table:
                     with table.row(**kwargs) as description_row:
-                        description_row.cell("description : " +str(registry.decls.lists[list_name].desc), **kwargs)
+                        description_row.cell("Description : " +str(registry.decls.lists[list_name].desc), **kwargs)
                     for key, value in item.items():
                        with table.row(**kwargs) as row:
                             row.cell(key, **kwargs)
@@ -70,7 +73,7 @@ class Section(AbstractContextManager):
             kwargs["title"] = kwargs.get("title", list_name) + " list"
             with self.table(cols=2, **kwargs) as table:
                 with table.row(**kwargs) as description_row:
-                    description_row.cell("description : " +str(registry.decls.lists[list_name].desc), **kwargs)
+                    description_row.cell("Description : " +str(registry.decls.lists[list_name].desc), **kwargs)
                 for key, value in registry.lists[list_name][0].items():
                  with table.row(**kwargs) as row:
                         row.cell(key, **kwargs)
@@ -90,7 +93,8 @@ class Section(AbstractContextManager):
  
         with self.table(cols=2, **kwargs) as table:
             with table.row(**kwargs) as description_row:
-                description_row.cell("description: " + str(registry.decls.captures[capture_name].desc), **kwargs)
+                #print("desc" + str(registry.decls.captures[capture_name].desc))
+                description_row.cell("Description: " + str(registry.decls.captures[capture_name].desc), **kwargs)
 
             with table.row(**kwargs) as row:
 
@@ -145,15 +149,16 @@ class Section(AbstractContextManager):
                 for command in context.commands.values():
                     with table.row(**kwargs) as row:
                         row.cell(Describe.command_rule(command), non_breaking=True, **kwargs)
-                        docs = Describe.command(command)
-                        impl = Describe.command_impl(command)
+                        #print("0: here is where the whole thing starts:")
+                        docs = Describe.command(command) #converts talonscript to psuedocode
+                        impl = Describe.command_impl(command) #otherwise just gets the raw code. 
+                        #print('--------#'+ str(impl))
                         if docs is not None:
                             row.cell(docs, **kwargs)
                         else:
                             row.cell(impl, css_classes='talon-script', **kwargs)
         else:
             pass
-
 
 class Doc(AbstractContextManager):
     def section(self, **kwargs) -> Section:

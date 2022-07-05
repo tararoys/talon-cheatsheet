@@ -8,14 +8,11 @@ from typing import *
 @dataclass(frozen=True)
 class MissingDocumentation(Exception):
     """Exception raised when a doc string cannot be built"""
-
     action_name: str
-
 
 @dataclass(frozen=True)
 class InvalidInterpolation(Exception):
     """Exception raised when attempting to interpolate a multiline doc string"""
-
     lines: tuple[str]
 
 

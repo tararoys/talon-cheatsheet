@@ -1,4 +1,4 @@
-from talon import actions  # type: ingore
+from talon import actions, registry  # type: ingore
 from talon.scripting.context import *  # type: ignore
 from talon.scripting.talon_script import *  # type: ignore
 from talon.scripting.types import *  # type: ignore
@@ -7,7 +7,6 @@ from user.cheatsheet.doc.talon_script.description import *
 from user.cheatsheet.doc.talon_script.walker import TalonScriptWalker
 
 import re
-
 
 class Describe(TalonScriptWalker):
 
@@ -34,9 +33,15 @@ class Describe(TalonScriptWalker):
     def command(command: CommandImpl) -> Optional[str]:
         """Describe a Talon context"""
         try:
-            desc_lines = Describe().fold_command(command)
+            #print("1. Try to describe Talon command")
+            desc_lines = Describe().fold_command(command) ### where the lines get converted from talonscript to their plain english equivalents
+            #print("12.",  str(desc_lines))
             desc = flatten(desc_lines)
+            #print("13", desc.lines[0])
+            if desc.lines[0].startswith("###"):
+                return desc.lines[0].lstrip('#').rstrip('.') + "." # If the talon command includes a triple hashtag as the first line, that is my (Tara's) equivalent to a docstring for that command, explaining what it does.  There's no need for any other documentation.
             desc = desc.compile()
+            desc = desc.strip().rstrip('.') + "." #fix for the double period that occasionally appears.
             return desc
         except MissingDocumentation as e:
             print(f"Action '{e.action_name}' has no documentation")
@@ -49,7 +54,9 @@ class Describe(TalonScriptWalker):
     @staticmethod
     def command_impl(command: CommandImpl) -> str:
         impl = command.target.code
-        return "\n".join(line.strip() for line in impl.splitlines())
+        compress = "\n".join(line.strip() for line in impl.splitlines()) #this just strips out all the whitespace
+        #print("13. oh this is if the translation does not work", str(compress))
+        return compress
 
     RuleRegexDel = re.compile(
         "{}|{}|{}".format(
@@ -73,7 +80,7 @@ class Describe(TalonScriptWalker):
         3. describing an action using its docstring, interpolating the descriptions of the parameters;
         4. describing in action using its docstring.
         """
-        # print(f"actions({name}, {args})")
+        #print(f"actions({name}, {args})")
         args: Sequence[Description] = tuple(map(self.fold_expr, args))
         return (
             Describe.try_describe_action_custom(name, args)
@@ -87,11 +94,12 @@ class Describe(TalonScriptWalker):
         action_name: str, args: Sequence[Description]
     ) -> Optional[Description]:
         """Describe the action using a custom function."""
+        #print("args", args)
         try:
             return {
-                "key": lambda key_values: Line(f"Press {flatten(key_values)}"),
+                "key": lambda key_values: Line(f"Press {flatten(key_values)} ({str(registry.decls.captures['user.'+str(flatten(key_values))].desc)})"),
                 "insert": lambda args: Line(f'Insert "{args[0]}"'),
-                "auto_insert": lambda args: Line(f'Insert "{args[0]}"'),
+                "auto_insert": lambda args: Line(f"Insert {args[0]} ({str(registry.decls.captures['user.'+str(flatten(args)).lstrip('<').rstrip('>')].desc)})"),
                 "sleep": lambda _: Ignore(),
                 "repeat": lambda args: Line(f"Repeat {args[0]} times"),
                 "edit.selected_text": lambda _: Chunk("the selected text"),
@@ -100,6 +108,9 @@ class Describe(TalonScriptWalker):
                 "user.idea": lambda args: Line(f'Do Jetbrains {flatten(args)}'),
                 "user.formatted_text": lambda args: Chunk(
                     f"{args[0]} (formatted with {args[1]})"
+                ),
+                "user.insert_formatted": lambda args: Line(
+                    f"Insert {args[0]} formatted as {args[1]}"
                 ),
                 "user.homophones_select": lambda args: Chunk(f"homophone #{args[0]}"),
             }[action_name](args)
@@ -140,13 +151,13 @@ class Describe(TalonScriptWalker):
                     return None
             except (NotImplementedError, KeyError):
                 # When issue 443 is fixed this should be enabled:
-                # print(f"Could not retrieve documentation for {action_name}")
+                #print(f"Could not retrieve documentation for {action_name}")
                 return None
             except ParseError:
-                print(f"Could not parse documentation for {action_name}")
+                #print(f"Could not parse documentation for {action_name}")
                 return None
         except ImportError:
-            print(f"Could not find docstring_parser package")
+            #print(f"Could not find docstring_parser package")
             return None
 
     @staticmethod
@@ -169,8 +180,11 @@ class Describe(TalonScriptWalker):
     # Describing other expressions
 
     def comment(self, text) -> Description:
-        # print(f"{text}")
-        return Ignore()
+        #print(f"**********************{text}")
+        if text.startswith('###'):
+            return Chunk(f"{text}")
+        else:
+            return Ignore()
 
     def operator(self, v1: Expr, op: str, v2: Expr) -> Description:
         # print(f"operator({v1} {op} {v2})")

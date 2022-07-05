@@ -35,12 +35,11 @@ class CheatSheetActions:
                 sec.context(registry.contexts["user.knausj_talon.modes.wake_up.talon"], context_name="user.knausj_talon.modes.wake_up.talon")
                 sec.context(registry.contexts["user.knausj_talon.modes.modes.talon"], context_name="user.knausj_talon.modes.modes.talon")
             
-            with doc.section(cols=1, css_classes="talon-contexts has-background-primary") as sec:
+            with doc.section(cols=1, css_classes="talon-contexts has-background-primary", title="Commands for Pressing Keys And Key Combinations") as sec:
                 sec.context(registry.contexts["user.knausj_talon.misc.keys.talon"], context_name="user.knausj_talon.misc.keys.talon")
            
 
-            with doc.section(cols=3, css_classes="has-background-primary talon-lists") as sec:
-                
+            with doc.section(cols=3, css_classes="has-background-primary talon-lists", title="Commands For Individual Keys On A Keyboard") as sec:
                 sec.list("user.letter")
                 sec.list("user.symbol_key")
                 sec.list("user.number_key")
@@ -49,25 +48,25 @@ class CheatSheetActions:
                 sec.list("user.special_key")
                 sec.capture("user.function_key")
             
-            with doc.section(cols=1, css_classes="talon-contexts has-background-warning") as sec:
+            with doc.section(cols=1, css_classes="talon-contexts has-background-warning", title = "Dictation Mode Commands") as sec:
                 sec.context(registry.contexts["user.knausj_talon.modes.dictation_mode.talon"], context_name = "user.knausj_talon.modes.dictation_mode.talon")
                 
-            with doc.section(cols=3, css_classes= "talon-lists has-background-warning") as sec:
+            with doc.section(cols=3, css_classes= "talon-lists has-background-warning", title= "Keywords To Use In Dictation Mode Commands") as sec:
                 sec.capture("user.raw_prose")
                 sec.list("user.punctuation")
                 sec.list("user.prose_snippets")
-                sec.capture("user.prose_simple_number")
+                sec.capture("user.prose_simple_number") 
                 sec.capture("user.prose_number_with_dot")
-                sec.capture("user.prose_number_with_colon")
+                sec.capture("user.prose_number_with_colon") 
                 sec.capture("user.formatter_immune")
                 sec.list("user.formatters")
 
-            with doc.section(cols=1, css_classes="has-background-danger") as sec:
+            with doc.section(cols=1, css_classes="has-background-danger", title = "Commands to Replace A Mouse") as sec:
                 sec.context(registry.contexts["user.knausj_talon.mouse_grid.mouse_grid_always.talon"], context_name = "user.knausj_talon.mouse_grid.mouse_grid_always.talon")
                 sec.context(registry.contexts["user.knausj_talon.mouse_grid.mouse_grid_open.talon"], context_name = "user.knausj_talon.mouse_grid.mouse_grid_open.talon")  
                 sec.context(registry.contexts["user.knausj_talon.misc.mouse.talon"], context_name = "user.knausj_talon.modes.misc.mouse.talon")
 
-            with doc.section(cols=1, css_classes="has-background-success") as sec:
+            with doc.section(cols=1, css_classes="has-background-success", title = "Commands To Manage Windows") as sec:
                 sec.context(registry.contexts["user.knausj_talon.misc.window_management.talon"], context_name = "user.knausj_talon.misc.window_management.talon")
             
             with doc.section(cols=2, css_classes="has-background-success") as sec:
@@ -86,7 +85,7 @@ class CheatSheetActions:
             doc = HtmlDoc(
                 file_path=os.path.join(this_dir, "cheatsheet.html"),
                 title="Giant Talon Command Reference",
-                css_include_path=os.path.join(this_dir, "style.css"),
+                css_include_path=os.path.join(this_dir, "dist/style.css"),
             )
 
         if format.lower() == "html-dev":
@@ -109,8 +108,8 @@ class CheatSheetActions:
 #                    list_name="user.symbol_key",
 #                )
                 for talon_list_name, talon_list in registry.lists.items():
-                    print("----------------------------------------------------\n")
-                    print("length: " + str(len(talon_list[0])))
+                    #print("----------------------------------------------------\n")
+                    #print("length: " + str(len(talon_list[0])))
                     #if len(talon_list[0]) < 100 :
                     if "user" in talon_list_name:
                         sec.list(list_name=talon_list_name)

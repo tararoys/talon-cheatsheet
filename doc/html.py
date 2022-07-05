@@ -6,7 +6,6 @@ from user.cheatsheet.doc.abc import *
 import os
 import re
 
-
 def html_escape(text: str) -> str:
     final_string = text.replace("_", "-") ## this replacement makes the links work but also replaces the underscores in the display name, making them incorrect.
     final_string_1 = final_string.replace("|", " | ")
@@ -21,30 +20,31 @@ def html_escape(text: str) -> str:
     capture_pattern = final_string_2 
     
     if re.search(r'&ltuser.([^&^\s]+)&gt', capture_pattern):
-        print(capture_pattern)
+        #print(capture_pattern)
+
         capture_pattern = re.sub(r'&ltuser.([^&^\s]+)&gt', r'<a href="#user-\1-capture">  &ltuser.\1&gt  </a>', capture_pattern)
-        print(capture_pattern)
+
+        #print(capture_pattern)
 
     if re.search(r'&ltself.([^&^\s]+)&gt', capture_pattern):
-        print(capture_pattern)
+        #print(capture_pattern)
         capture_pattern = re.sub(r'&ltself.([^&^\s]+)&gt', r'<a href="#user-\1-capture">  &ltself.\1&gt  </a>', capture_pattern)
     
     if re.search(r'{user.([^}^\s]+)}', capture_pattern):
-        print(capture_pattern)
+        #print(capture_pattern)
         capture_pattern = re.sub(r'{user.([^}^\s]+)}', r'<a href="#user-\1-list">  {user.\1}  </a>', capture_pattern)
-        print(capture_pattern)
+        #print(capture_pattern)
     
     if re.search(r'{self.([^}^\s]+)}', capture_pattern):
-        print(capture_pattern)
+        #print(capture_pattern)
         capture_pattern = re.sub(r'{self.([^}^\s]+)}', r'<a href="#user-\1-list">  {self.\1}  </a>', capture_pattern)
-        print(capture_pattern)
+        #print(capture_pattern)
 
-    final_string = capture_pattern.replace("_", "-") ## this replacement makes the links work but also replaces the underscores in the display name, making them incorrect.
+    #final_string = capture_pattern.replace("_", "-") ## this replacement makes the links work but also replaces the underscores in the display name, making them incorrect.
     
-    
-    return final_string
+    #return final_string
 
-
+    return capture_pattern
 
 def attr_class(kwargs) -> str:
     css_classes = kwargs.get("css_classes", [])
@@ -61,19 +61,26 @@ def attr_class(kwargs) -> str:
     else:
         return ""
 
-
 def attr_colspan(kwargs) -> str:
     if "cols" in kwargs:
         return f" colspan=\"{kwargs['cols']}\""
     else:
         return ""
 
+def relative_link(kwargs)->str:
+    if "title" in kwargs:
+        id = kwargs['title']
+        #print(id)
+        id=re.sub(r'[\(\)_,.?!\t\n ]+', '-', id)
+        #print(id)
+        return f"{id}"
+
 def attr_id(kwargs)->str:
     if "title" in kwargs:
         id = kwargs['title']
-        print(id)
+        #print(id)
         id=re.sub(r'[\(\)_,.?!\t\n ]+', '-', id)
-        print(id)
+        #print(id)
         return f" id=\"{id}\""
     else:
         return ""
@@ -97,18 +104,21 @@ class HtmlRow(Row):
 
 class HtmlTable(Table):
     def __init__(self, file: TextIOWrapper, **kwargs):
+        #print("hi im a table")
         self.file = file
         self.kwargs = kwargs
 
     def __enter__(self) -> HtmlTable:
+        #print("...entering table")
         self.file.write(f"<div{attr_class(self.kwargs)}>\n")
         self.file.write(f"<table>\n")
 
         if "title" in self.kwargs:
             self.file.write(f"<thead>")
             self.file.write(f"<tr>")
+            
             self.file.write(
-                f"<th{attr_colspan(self.kwargs)}{attr_id(self.kwargs)}>{html_escape(self.kwargs['title'])}</th>"
+                f"<th{attr_colspan(self.kwargs)}{attr_id(self.kwargs)}><a href='#{relative_link(self.kwargs)}'>{html_escape(self.kwargs['title'])}</a></th>"
             )
             self.file.write(f"</tr>")
             self.file.write(f"</thead>")
@@ -124,6 +134,7 @@ class HtmlTable(Table):
     def row(self, **kwargs) -> HtmlRow:
         return HtmlRow(self.file, **kwargs)
 
+        
 
 class HtmlSection(Section):
     def __init__(self, file: TextIOWrapper, **kwargs):
@@ -131,9 +142,9 @@ class HtmlSection(Section):
         self.kwargs = kwargs
 
     def __enter__(self) -> HtmlSection:
+        self.file.write(f"<section{attr_class(self.kwargs)}>\n")
         if "title" in self.kwargs:
             self.file.write(f"<h1>{html_escape(self.kwargs['title'])}</h1>\n")
-        self.file.write(f"<section{attr_class(self.kwargs)}>\n")
         return self
 
     def __exit__(self, exception_type, exception_value, traceback):
@@ -186,4 +197,8 @@ class HtmlDoc(Doc):
         self.file.close()
 
     def section(self, **kwargs) -> HtmlSection:
-        return HtmlSection(self.file, **kwargs)
+        #print("what is self?" + str(self))
+        #print("what are kwargs?" + str(kwargs)) 
+        html = HtmlSection(self.file, **kwargs)
+        #print(str(html))
+        return html
