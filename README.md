@@ -6,12 +6,12 @@ To recreate what I did:
 
 1. Install Talon on your computer (see [Getting Started][talon-getting-started]).
 2. Clone this repository into your Talon user directory (see [Getting Scripts](talon-getting-scripts)).
-3. **Optional:** For additional functionality, you could also install a pacakge that parses docstrings. This can be done with `~/.talon/bin/pip install docstring_parser` in Linux / Mac, or something like `%AppData%\Talon\user\bin pip install docstring_parser` in Windows. Again, this step is *not* required for the basic functionality.
+3. **Optional:** For additional functionality, you could also install a package that parses docstrings. This can be done with `~/.talon/bin/pip install docstring_parser` in Linux / Mac, or something like `%AppData%\talon\.venv\Scripts\pip.bat install docstring_parser` in Windows. Again, this step is *not* required for the basic functionality.
 4. Say `print help` or `print latex help`.
 
 This will generate a self contained HTML or LaTeX file in the repository directory.
 
-# Building the style sheet
+# Building the stylesheet
 
 The repository contains both a Sass stylesheet, `style.sass`, and a precompiled CSS stylesheet, `style.css`.
 When you say 'print cheatsheet', the generated HTML file, `cheatsheet.html` inlines the precompiled CSS stylesheet.
